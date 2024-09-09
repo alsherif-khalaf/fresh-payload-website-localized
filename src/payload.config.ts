@@ -32,6 +32,11 @@ import { revalidateRedirects } from './hooks/revalidateRedirects'
 import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import { Page, Post } from 'src/payload-types'
 
+// Import language files
+import { en } from 'payload/i18n/en'
+import { ar } from 'payload/i18n/ar'
+import { fr } from 'payload/i18n/fr'
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -39,10 +44,11 @@ const generateTitle: GenerateTitle<Post | Page> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Payload Website Template` : 'Payload Website Template'
 }
 
-const generateURL: GenerateURL<Post | Page> = ({ doc }) => {
+const generateURL: GenerateURL<Post | Page> = ({ doc, locale }) => {
+  const baseURL = process.env.NEXT_PUBLIC_SERVER_URL! || ''
   return doc?.slug
-    ? `${process.env.NEXT_PUBLIC_SERVER_URL!}/${doc.slug}`
-    : process.env.NEXT_PUBLIC_SERVER_URL!
+    ? `${baseURL}/${locale}/${doc.slug}`
+    : `${baseURL}/${locale}`
 }
 
 export default buildConfig({
@@ -161,6 +167,14 @@ export default buildConfig({
     seoPlugin({
       generateTitle,
       generateURL,
+      fieldOverrides: {
+        title: {
+          localized: true,
+        },
+        description: {
+          localized: true,
+        },
+      }
     }),
     formBuilderPlugin({
       fields: {
@@ -194,5 +208,32 @@ export default buildConfig({
   sharp,
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
+  },
+  localization: {
+    locales: [
+      {
+        label: 'English',
+        code: 'en',
+      },
+      {
+        label : "Frençais",
+        code : "fr",
+      },
+      {
+        label: 'العربية',
+        code: 'ar',
+        rtl: true,
+      },
+    ],
+    defaultLocale: 'en',
+    fallback: true,
+  },
+  i18n: {
+    supportedLanguages: {
+      en,
+      ar,
+      fr
+    },
+    fallbackLanguage: 'en',
   },
 })
