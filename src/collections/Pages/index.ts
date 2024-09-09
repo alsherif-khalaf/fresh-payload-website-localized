@@ -29,17 +29,18 @@ export const Pages: CollectionConfig = {
     update: authenticated,
   },
   admin: {
+    group: {ar : 'الصفحات', en : 'Pages'},
     defaultColumns: ['title', 'slug', 'updatedAt'],
     livePreview: {
-      url: ({ data }) => {
+      url: ({ data , locale }) => {
         const path = generatePreviewPath({
-          path: `/${typeof data?.slug === 'string' ? data.slug : ''}`,
+          path: `/${locale.code}/${typeof data?.slug === 'string' ? data.slug : ''}`,
         })
         return `${process.env.NEXT_PUBLIC_SERVER_URL}${path}`
       },
     },
-    preview: (doc) =>
-      generatePreviewPath({ path: `/${typeof doc?.slug === 'string' ? doc.slug : ''}` }),
+    preview: (doc , {locale}) =>
+      generatePreviewPath({ path: `/${locale}/${typeof doc?.slug === 'string' ? doc.slug : ''}` }),
     useAsTitle: 'title',
   },
   fields: [
@@ -47,6 +48,7 @@ export const Pages: CollectionConfig = {
       name: 'title',
       type: 'text',
       required: true,
+      localized: true,
     },
     {
       type: 'tabs',
