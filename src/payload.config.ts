@@ -235,5 +235,21 @@ export default buildConfig({
       fr
     },
     fallbackLanguage: 'en',
-  },
+  }, 
+  async onInit(payload) {
+    const existingUsers = await payload.find({
+      collection: 'users',
+      limit: 1,
+    });
+
+    if (existingUsers.docs.length === 0) {
+      const Admin = await payload.create({
+        collection: 'users',
+        data: {
+          email: 'admin@website.local',
+          password: 'AdminPassword123!',
+        },
+      });
+    }
+  }
 })
